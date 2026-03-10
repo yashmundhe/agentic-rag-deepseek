@@ -1,45 +1,135 @@
-# Enterprise-grade, agentic RAG over complex real-world docs
+# 🤖 Agentic RAG over Complex Real-World Documents
 
-The project uses EyelevelAI's state of the art document parsing and retrieval system GroundX. It's integrated as a custom tool with CrewAI.
+A fully local, multi-agent RAG (Retrieval-Augmented Generation) system that lets you chat with any PDF using AI agents. Built with CrewAI, GroundX, DeepSeek-R1, and Streamlit.
 
-Before you start, quickly test it on your own document [here](https://dashboard.eyelevel.ai/xray)
-
-GroundX can also be deployed completely on premise as well, the code is open-source, here's their [GitHub repo](https://github.com/eyelevelai/groundx-on-prem).
-
-Grab your API keys's here.
-- [GroundX API keys](https://docs.eyelevel.ai/documentation/fundamentals/quickstart#step-1-getting-your-api-key)
-- [SERPER API keys](https://serper.dev/)
-
-### Watch this tutorial on YouTube
-[![Watch this tutorial on YouTube](https://github.com/patchy631/ai-engineering-hub/blob/main/agentic_rag_deepseek/assets/thumbnail.png)](https://www.youtube.com/watch?v=79xvgj4wvHQ)
+![Demo](assets/thumbnail.png)
 
 ---
-## Setup and installations
 
-**Setup Environment**:
-- Paste your API keys by creating a `.env`
-- Refer `.env.example` file
+## 🧠 How It Works
 
+Two AI agents collaborate sequentially to answer your questions:
 
-**Install Dependencies**:
-   Ensure you have Python 3.11 or later installed.
-   ```bash
-   pip install groundx crewai crewai-tools
-   ```
-**Running the app**:
+```
+You ask a question
+       ↓
+  Retriever Agent
+  ├── searches your PDF first (via GroundX)
+  └── falls back to web search (via Serper) if needed
+       ↓
+  Synthesizer Agent
+  └── formats a clean, coherent answer
+       ↓
+  Streamlit Chat UI
+```
+
+**Why two agents?** The Retriever focuses purely on finding relevant information, while the Synthesizer focuses purely on communicating it clearly. Two specialized agents produce better answers than a single monolithic prompt.
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Tool | Purpose |
+|---|---|---|
+| Agent Orchestration | [CrewAI](https://crewai.com) | Coordinates multiple AI agents |
+| Document Parsing | [GroundX](https://eyelevel.ai) | Enterprise-grade PDF parsing & retrieval |
+| LLM | [DeepSeek-R1:7b](https://ollama.com/library/deepseek-r1) via Ollama | Local language model, no API costs |
+| Web Search Fallback | [Serper](https://serper.dev) | Google Search API for queries outside the PDF |
+| UI | [Streamlit](https://streamlit.io) | Chat interface |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.11+
+- [Ollama](https://ollama.com) installed
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/yashmundhe/agentic-rag-deepseek.git
+cd agentic-rag-deepseek
+```
+
+### 2. Install Ollama and pull DeepSeek
+```bash
+# Install Ollama (Mac)
+brew install ollama
+
+# Start Ollama server (keep this running)
+ollama serve
+
+# In a new terminal, pull the model (~4.7GB)
+ollama pull deepseek-r1:7b
+```
+
+### 3. Install Python dependencies
+```bash
+pip install groundx crewai crewai-tools streamlit python-dotenv litellm anthropic
+```
+
+### 4. Set up API keys
+Create a `.env` file in the project root:
+```
+GROUNDX_API_KEY=your_groundx_key_here
+SERPER_API_KEY=your_serper_key_here
+```
+
+Get your keys:
+- [GroundX API key](https://docs.eyelevel.ai/documentation/fundamentals/quickstart#step-1-getting-your-api-key)
+- [Serper API key](https://serper.dev)
+
+### 5. Run the app
 ```bash
 streamlit run app_deep_seek.py
 ```
 
 ---
 
-## 📬 Stay Updated with Our Newsletter!
-**Get a FREE Data Science eBook** 📖 with 150+ essential lessons in Data Science when you subscribe to our newsletter! Stay in the loop with the latest tutorials, insights, and exclusive resources. [Subscribe now!](https://join.dailydoseofds.com)
+## 📁 Project Structure
 
-[![Daily Dose of Data Science Newsletter](https://github.com/patchy631/ai-engineering/blob/main/resources/join_ddods.png)](https://join.dailydoseofds.com)
+```
+agentic_rag_deepseek/
+├── app_deep_seek.py          # Main Streamlit app
+├── assets/                   # Images
+├── knowledge/                # Sample PDFs
+├── src/agentic_rag/
+│   ├── config/
+│   │   ├── agents.yaml       # Agent definitions
+│   │   └── tasks.yaml        # Task definitions
+│   ├── tools/
+│   │   └── custom_tool.py    # GroundX document search tool
+│   ├── crew.py               # CrewAI crew definition
+│   └── main.py               # CLI entry point
+└── .env                      # API keys (not committed)
+```
 
 ---
 
-## Contribution
+## ⚙️ Key Design Decisions
 
-Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
+**Why GroundX over basic PDF readers?** Standard PDF parsers like PyPDF2 struggle with complex layouts, tables, and charts. GroundX uses computer vision to parse documents the way a human would read them, resulting in much better retrieval quality.
+
+**Why local LLM?** Running DeepSeek-R1:7b via Ollama means zero API costs and full data privacy — your documents never leave your machine.
+
+**Why CrewAI?** Splitting retrieval and synthesis into separate agents with distinct roles produces more reliable, higher-quality answers compared to a single monolithic prompt.
+
+---
+
+## 🔧 Troubleshooting
+
+**`Connection refused` error** — Ollama server isn't running. Start it with `ollama serve`.
+
+**Slow responses** — Expected with a 7B model locally. For faster responses, swap to `deepseek-r1:1.5b` in `app_deep_seek.py`.
+
+**Document still processing** — GroundX takes 30–60 seconds to index a new PDF. Wait and retry your query.
+
+**`litellm` not found** — Run `pip install litellm`.
+
+---
+
+## 📬 Connect
+
+Built by [Yash Mundhe](https://www.linkedin.com/in/yashmundhe) — MS Data Science @ Northeastern University
+
+Interested in data engineering, agentic AI, and building things that actually work.
