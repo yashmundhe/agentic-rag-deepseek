@@ -131,3 +131,8 @@ agentic_rag_deepseek/
 Built by [Yash Mundhe](https://www.linkedin.com/in/yashmundhe) — MS Data Science @ Northeastern University
 
 Interested in data engineering, agentic AI, and building things that actually work.
+
+---
+
+## Credits
+Inspired by [Akshay Pachaar's](https://github.com/patchy631) ai-engineering-hub.
