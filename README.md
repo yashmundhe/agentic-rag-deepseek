@@ -2,8 +2,6 @@
 
 A fully local, multi-agent RAG (Retrieval-Augmented Generation) system that lets you chat with any PDF using AI agents. Built with CrewAI, GroundX, DeepSeek-R1, and Streamlit.
 
-![Demo](assets/thumbnail.png)
-
 ---
 
 ## 🧠 How It Works
